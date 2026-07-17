@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "PokeRogue Mini-Hack Extension",
+  "version": "1.0",
+  "description": "PokeRogue 100% Shiny & Egg Hacker (Developer Edition)",
+  "permissions": [
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://pokerogue.net/*",
+    "https://beta.pokerogue.net/*",
+    "https://mokerogue.net/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://pokerogue.net/*",
+        "https://beta.pokerogue.net/*",
+        "https://mokerogue.net/*"
+      ],
+      "js": [
+        "injector.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "mod.min.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

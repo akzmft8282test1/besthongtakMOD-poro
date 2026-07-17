@@ -1,0 +1,48 @@
+    {
+        "manifest_version": 2,
+        "name": "PokeRogueMOD",
+        "version": "1.2",   
+
+        "description": "An overlay with a lot of JavaScript MODs for the game PokéRogue.",
+
+        "permissions": [
+            "activeTab",
+            "webRequest",
+            "https://pokerogue.net/*",
+            "https://api.pokerogue.net/*",
+            "https://mokerogue.net/*",
+            "https://api.mokerogue.net/*"
+        ],
+        "background": {
+            "scripts": [
+                "background.js"
+            ]
+        },
+        "content_scripts": [
+            {
+                "matches": [
+                    "https://pokerogue.net/*",
+                    "https://api.pokerogue.net/*",
+                    "https://mokerogue.net/*",
+                    "https://api.mokerogue.net/*"
+                ],
+                "js": [
+                    "injector.js"
+                ],
+                "run_at": "document_start"
+            }
+        ],
+        "web_accessible_resources": [
+            "mod.min.js"
+        ],
+        "applications": {
+            "gecko": {
+                "id": "poke-rogue-mod@mpb.rip",
+                "strict_min_version": "42.0"
+            }
+        },
+        "icons": {
+            "48": "icons/plugin-logo-48.png",
+            "96": "icons/plugin-logo-96.png"
+        }
+    }

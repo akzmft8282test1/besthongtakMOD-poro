@@ -1,0 +1,61 @@
+#accountScreen {
+    flex: 1;
+    flex-direction: column;
+}
+
+.input-table {
+    border-collapse: collapse;
+    border-spacing: 0 4px; /* Add 4px spacing between rows */
+}
+
+.input-row {
+    display: table-row;
+    height: 40px; /* Adjust height to ensure proper vertical alignment */
+}
+
+.label-cell,
+.checkbox-cell {
+    padding: 8px;
+    border: none;
+    vertical-align: middle !important; /* Vertically center the content */
+}
+
+.label-cell {
+    text-align: left; /* Align the text label to the left */
+    width: 1%; /* Shrink to fit content */
+    white-space: nowrap; /* Prevent line break */
+}
+
+.checkbox-cell {
+    text-align: center;
+    width: 1%; /* Shrink to fit content */
+    white-space: nowrap; /* Prevent line break */
+}
+
+.roll-button {
+    color: #e0681a;
+    background-color: rgba(0, 0, 0, 0.8);
+    margin: 0px 2px;
+    font-weight: bold;
+    border: 1px solid #e0681a;
+    margin-top: 4px;
+    flex: 1;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #e0681a;
+    color: black;
+    cursor: pointer;
+    height: 36px; /* Set consistent height for inputs and buttons */
+    box-sizing: border-box; /* Ensure padding and border are included in height */
+}
+
+
+.main-dropdown {
+    min-width: 300px !important;
+}
+
+/* Ensure item tier select option is visible */

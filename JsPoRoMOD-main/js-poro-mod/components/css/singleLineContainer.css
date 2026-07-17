@@ -1,0 +1,7 @@
+/* Single line container to ensure elements are in a single row */
+.single-line-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+}

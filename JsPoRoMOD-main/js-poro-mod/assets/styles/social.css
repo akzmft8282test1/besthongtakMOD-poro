@@ -1,0 +1,45 @@
+/* social.css */
+.social-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    color: #e0681a;
+    padding: 4px;
+}
+
+/* Prevent background color change on click */
+.social-toggle:active {
+    background: transparent; /* Ensure background remains transparent */
+}
+
+/* If you want to prevent focus outline on click */
+.social-toggle:focus {
+    outline: none; /* Prevents focus outline */
+}
+
+/* Ensure hover state also remains transparent */
+.social-toggle:hover {
+    background: transparent;
+}
+
+.social-links {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+}
+
+.social-links.active {
+    display: flex;
+}
+
+.social-button img {
+    max-width: 20px;
+    max-height: 20px;
+}
