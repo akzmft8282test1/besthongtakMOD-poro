@@ -34,15 +34,11 @@ if (!PORT || !ADMIN_PASSWORD || !JWT_SECRET || !SUPABASE_URL || !SUPABASE_KEY) {
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==========================================
-// [해결] 루트 경로(/) 접근 시 admin.html을 보여주거나 안내문 출력
+// [루트 경로] 대시보드 파일 매핑
 // ==========================================
-// 만약 server.js와 같은 폴더에 admin.html이 있다면 아래 코드를 쓰세요:
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
-
-// 만약 html을 따로 띄우지 않고 메시지만 주려면 아래 주석을 풀고 위 get을 지우세요.
-// app.get('/', (req, res) => { res.send('🚀 PokeRogue 라이선스 서버가 정상 구동 중입니다.'); });
 
 
 /**
@@ -70,10 +66,11 @@ app.post('/api/admin/generate-coupon', async (req, res) => {
 
         const { customCode, durationMinutes, allowedFeatures } = req.body;
 
-        if (!customCode || !durationMinutes || !allowedFeatures) {
-            return res.status(400).json({ message: "필수 입력 값이 누락되었습니다." });
+        if (!customCode || durationMinutes === undefined || !allowedFeatures || !Array.isArray(allowedFeatures)) {
+            return res.status(400).json({ message: "필수 입력 값이 누락되었거나 형식이 올바르지 않습니다." });
         }
 
+        // 대소문자 오차 방지를 위한 변환 규칙 강화
         const upperCode = customCode.trim().toUpperCase();
 
         // [DB 연동] 중복 쿠폰 체크
@@ -102,7 +99,7 @@ app.post('/api/admin/generate-coupon', async (req, res) => {
         res.json({ success: true, coupon: upperCode });
     } catch (err) {
         console.error(err);
-        res.status(401).json({ message: "인증 토큰이 유효하지 않거나 DB 처리 오류입니다." });
+        res.status(401).json({ message: "인증 토큰이 유효하지 않거나 데이터베이스 트랜잭션 처리 오류입니다." });
     }
 });
 
@@ -113,6 +110,7 @@ app.post('/api/license/redeem', async (req, res) => {
     const { couponCode } = req.body;
     if (!couponCode) return res.status(400).json({ valid: false, message: "코드를 입력해주세요." });
 
+    // 사용자가 입력한 문자열 오차 교정
     const upperCode = couponCode.trim().toUpperCase();
 
     try {
@@ -131,7 +129,7 @@ app.post('/api/license/redeem', async (req, res) => {
             return res.status(400).json({ valid: false, message: "이미 사용된 쿠폰 코드입니다." });
         }
 
-        // [DB 연동 핵심] 중복 사용 방지를 위해 사용 완료 상태 즉시 수정
+        // [DB 연동 핵심] 동시성 충돌 및 중복 사용 차단을 위한 즉각적인 단방향 상태 잠금
         const { error: updateError } = await supabase
             .from('coupons')
             .update({ 
@@ -142,7 +140,7 @@ app.post('/api/license/redeem', async (req, res) => {
 
         if (updateError) throw updateError;
 
-        // 기간 한정 클라이언트 전용 JWT 토큰 서명
+        // 지정된 사용 한도 유효기간을 반영한 서명 발급
         const clientToken = jwt.sign(
             { features: coupon.allowed_features },
             JWT_SECRET,

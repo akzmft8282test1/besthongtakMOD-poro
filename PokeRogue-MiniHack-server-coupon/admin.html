@@ -2,59 +2,275 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>PokeRogue Admin Control Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeRogue Admin Control Dashboard</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: #fff; padding: 40px; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; max-width: 450px; margin-bottom: 20px; border: 1px solid #e0681a; }
-        input, select, button { width: 100%; box-sizing: border-box; padding: 10px; margin: 8px 0; border-radius: 4px; border: none; font-weight: bold; }
-        button { background: #e0681a; color: #000; cursor: pointer; }
-        .feature-block { display: flex; gap: 10px; margin: 5px 0; }
+        :root {
+            --bg-color: #0c0f12;
+            --card-bg: #161b22;
+            --primary-color: #ff7a00;
+            --primary-hover: #e0681a;
+            --text-color: #f0f3f6;
+            --muted-color: #8b949e;
+            --border-color: #30363d;
+            --success-color: #2ea44f;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-color); 
+            padding: 40px 20px; 
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #ff7a00, #ffb800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 12px rgba(255, 122, 0, 0.1);
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 16px; 
+            width: 100%;
+            max-width: 480px; 
+            box-sizing: border-box;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color); 
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--primary-color);
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--muted-color);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        input[type="text"], 
+        input[type="number"], 
+        input[type="password"] { 
+            width: 100%; 
+            box-sizing: border-box; 
+            padding: 12px 14px; 
+            background: #0d1117;
+            color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px; 
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15);
+        }
+
+        .btn-random {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: auto;
+            padding: 6px 12px;
+            font-size: 11px;
+            background: #21262d;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            margin: 0;
+        }
+
+        .btn-random:hover {
+            background: #30363d;
+        }
+
+        button { 
+            width: 100%; 
+            box-sizing: border-box; 
+            padding: 14px; 
+            margin-top: 10px;
+            border-radius: 8px; 
+            border: none; 
+            font-size: 15px;
+            font-weight: bold; 
+            background: var(--primary-color); 
+            color: #000; 
+            cursor: pointer; 
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover { 
+            background: var(--primary-hover); 
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .feature-container {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+
+        .feature-block { 
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            padding: 8px 4px;
+            border-bottom: 1px solid #1f242c;
+        }
+
+        .feature-block:last-child {
+            border-bottom: none;
+        }
+
+        .feature-block input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .feature-block span {
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .feature-block .desc {
+            font-size: 11px;
+            color: var(--muted-color);
+            margin-left: auto;
+        }
     </style>
 </head>
 <body>
-    <h2>PokeRogue 프로젝트 쿠폰 제어 패널 👑</h2>
+
+    <h2>PokeRogue Project Control Tower 👑</h2>
     
+    <!-- 1. 관리자 비밀번호 인증 카드 -->
     <div id="login-section" class="card">
-        <h3>관리자 인증</h3>
-        <input type="password" id="admin-pass" placeholder="관리자 비밀번호">
-        <button onclick="login()">로그인</button>
+        <h3>🔐 관리자 세션 인증</h3>
+        <label for="admin-pass">Master Password</label>
+        <input type="password" id="admin-pass" placeholder="보안 통신용 관리자 비밀번호 입력">
+        <button onclick="login()">Dashboard 진입</button>
     </div>
 
+    <!-- 2. 쿠폰 제어 및 커스텀 발급 카드 -->
     <div id="control-section" class="card" style="display:none;">
-        <h3>쿠폰 커스텀 발급</h3>
+        <h3>🎫 일회성 보안 쿠폰 발행</h3>
         
-        <label>원하는 쿠폰 코드 입력:</label>
-        <input type="text" id="custom-code" placeholder="예: NEW-START-2026">
+        <label>쿠폰 코드 구성</label>
+        <div class="input-group">
+            <input type="text" id="custom-code" placeholder="예: SHINY-LUCK-2026">
+            <button class="btn-random" onclick="generateRandomCode()">🎲 자동 생성</button>
+        </div>
 
-        <label>사용 가능 시간(분):</label>
-        <input type="number" id="duration" value="30" min="1">
+        <label for="duration">유효 이용 한도 제한 (시간 단위 분할)</label>
+        <div class="input-group">
+            <input type="number" id="duration" value="60" min="1">
+            <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--muted-color);">분 동안 작동</span>
+        </div>
         
-        <label>허용할 기능 목록:</label>
-        <div class="feature-block"><input type="checkbox" value="shiny" class="feat" checked> 이로치 조작</div>
-        <div class="feature-block"><input type="checkbox" value="egg" class="feat" checked> 전설 알 후킹</div>
-        <div class="feature-block"><input type="checkbox" value="money" class="feat" checked> 무한 소지금</div>
-        <div class="feature-block"><input type="checkbox" value="starters" class="feat" checked> 스타터 및 알기술 해금</div>
+        <label>허용 권한 및 인젝션 모듈 선택</label>
+        <div class="feature-container">
+            <div class="feature-block">
+                <input type="checkbox" id="f-shiny" value="shiny" class="feat" checked>
+                <span onclick="document.getElementById('f-shiny').click()">🌟 행운 및 이로치 종합 조작</span>
+                <div class="desc">[이로치/연타/사탕/아이템 스택]</div>
+            </div>
+            <div class="feature-block">
+                <input type="checkbox" id="f-egg" value="egg" class="feat" checked>
+                <span onclick="document.getElementById('f-egg').click()">🥚 전설 알 가로채기 후킹</span>
+                <div class="desc">[부화 웨이브 단축 포함]</div>
+            </div>
+            <div class="feature-block">
+                <input type="checkbox" id="f-money" value="money" class="feat" checked>
+                <span onclick="document.getElementById('f-money').click()">💰 무한 골드 및 상점 리롤</span>
+                <div class="desc">[소지금 고정 및 리롤 지정]</div>
+            </div>
+            <div class="feature-block">
+                <input type="checkbox" id="f-starters" value="starters" class="feat" checked>
+                <span onclick="document.getElementById('f-starters').click()">🧬 올 스타터 및 알기술 해금</span>
+                <div class="desc">[도감 강제 완벽 주입]</div>
+            </div>
+        </div>
 
-        <button onclick="createCustomCoupon()">쿠폰 등록하기</button>
+        <button onclick="createCustomCoupon()" style="background: var(--success-color); color: #fff;">보안 라이선스 쿠폰 등록</button>
     </div>
 
     <script>
         const SERVER_URL = "https://besthongtak-control-server.onrender.com"; 
         let adminToken = "";
 
+        // 편리성을 위한 무작위 쿠폰 생성기 기능 추가
+        function generateRandomCode() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let result = "ROGE-";
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('custom-code').value = result;
+        }
+
         async function login() {
             const password = document.getElementById('admin-pass').value;
-            const res = await fetch(`${SERVER_URL}/api/admin/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password })
-            });
-            const data = await res.json();
-            if(data.success) {
-                adminToken = data.adminToken;
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('control-section').style.display = 'block';
-            } else { alert("비밀번호가 올바르지 않습니다."); }
+            if(!password) return alert("비밀번호를 입력해주세요.");
+            
+            try {
+                const res = await fetch(`${SERVER_URL}/api/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    adminToken = data.adminToken;
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('control-section').style.display = 'block';
+                    generateRandomCode(); // 로그인 성공 시 기본 코드 1개 자동 추천
+                } else { 
+                    alert("⚠️ 비밀번호가 올바르지 않습니다."); 
+                }
+            } catch (e) {
+                alert("네트워크 통신 중 에러가 발생했습니다.");
+            }
         }
 
         async function createCustomCoupon() {
@@ -63,21 +279,29 @@
             const checkboxes = document.querySelectorAll('.feat:checked');
             const allowedFeatures = Array.from(checkboxes).map(cb => cb.value);
 
-            if(!customCode) return alert("생성할 쿠폰 코드를 입력해주세요.");
+            if(!customCode) return alert("생성할 쿠폰 코드를 명시하거나 자동 생성 버튼을 누르세요.");
+            if(isNaN(durationMinutes) || durationMinutes < 1) return alert("유효 시간은 최소 1분 이상이어야 합니다.");
+            if(allowedFeatures.length === 0) return alert("최소 한 개 이상의 모듈 권한을 승인해야 합니다.");
 
-            const res = await fetch(`${SERVER_URL}/api/admin/generate-coupon`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': adminToken
-                },
-                body: JSON.stringify({ customCode, durationMinutes, allowedFeatures })
-            });
-            const data = await res.json();
-            if(data.success) {
-                alert(`🎉 [${data.coupon}] 쿠폰 코드가 서버에 정상 등록되었습니다.\n이 코드는 1회만 등록 사용 가능합니다.`);
-                document.getElementById('custom-code').value = "";
-            } else { alert(data.message); }
+            try {
+                const res = await fetch(`${SERVER_URL}/api/admin/generate-coupon`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': adminToken
+                    },
+                    body: JSON.stringify({ customCode, durationMinutes, allowedFeatures })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    alert(`🎉 [${data.coupon}] 등록 완벽 성공!\n클라이언트 제어 코드가 백엔드 세션에 기록되었습니다.`);
+                    generateRandomCode(); // 다음 발급을 위해 난수 미리 롤링
+                } else { 
+                    alert(data.message); 
+                }
+            } catch (e) {
+                alert("쿠폰 발급 원격 요청 처리 중 통신 에러가 빌생했습니다.");
+            }
         }
     </script>
 </body>
