@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>PokeRogue Master Admin Panel</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #fff; padding: 40px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; max-width: 450px; margin-bottom: 20px; border: 1px solid #e0681a; }
+        input, select, button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 4px; border: none; font-weight: bold; }
+        button { background: #e0681a; color: #000; cursor: pointer; }
+        .feature-block { display: flex; gap: 10px; margin: 5px 0; }
+        textarea { width: 100%; height: 80px; background: #000; color: #00ff00; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h2>PokeRogue 라이선스 관리자 시스템 👑</h2>
+    
+    <!-- 로그인 폼 -->
+    <div id="login-section" class="card">
+        <h3>관리자 로그인</h3>
+        <input type="password" id="admin-pass" placeholder="관리자 비밀번호 입력">
+        <button onclick="login()">로그인</button>
+    </div>
+
+    <!-- 쿠폰 생성 폼 -->
+    <div id="control-section" class="card" style="display:none;">
+        <h3>쿠폰 발급</h3>
+        <label>사용 유효 시간(분):</label>
+        <input type="number" id="duration" value="30" min="1">
+        
+        <label>허용할 기능 선택:</label>
+        <div class="feature-block"><input type="checkbox" value="shiny" class="feat" checked> 이로치 조작</div>
+        <div class="feature-block"><input type="checkbox" value="egg" class="feat" checked> 전설 알 후킹</div>
+        <div class="feature-block"><input type="checkbox" value="money" class="feat" checked> 무한 소지금</div>
+        <div class="feature-block"><input type="checkbox" value="starters" class="feat" checked> 스타터 및 알 기술 해금</div>
+
+        <button onclick="generateToken()">라이선스 토큰 생성</button>
+        
+        <h4 style="margin-top:15px;">발급된 라이선스 토큰 (사용자 전달용):</h4>
+        <textarea id="result-token" readonly></textarea>
+    </div>
+
+    <script>
+        const SERVER_URL = "https://본인의-render-앱이름.onrender.com"; // 배포 후 주소 변경 필수
+        let adminToken = "";
+
+        async function login() {
+            const password = document.getElementById('admin-pass').value;
+            const res = await fetch(`${SERVER_URL}/api/admin/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await res.json();
+            if(data.success) {
+                adminToken = data.adminToken;
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('control-section').style.display = 'block';
+            } else { alert(data.message); }
+        }
+
+        async function generateToken() {
+            const durationMinutes = parseInt(document.getElementById('duration').value);
+            const checkboxes = document.querySelectorAll('.feat:checked');
+            const allowedFeatures = Array.from(checkboxes).map(cb => cb.value);
+
+            const res = await fetch(`${SERVER_URL}/api/admin/generate-coupon`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': adminToken
+                },
+                body: JSON.stringify({ durationMinutes, allowedFeatures })
+            });
+            const data = await res.json();
+            if(data.success) {
+                document.getElementById('result-token').value = data.token;
+            } else { alert("발급 실패"); }
+        }
+    </script>
+</body>
+</html>

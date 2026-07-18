@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "1PokeRogue Mini-Hack Extension",
-  "version": "1.0.1",
+  "name": "PokeRogue Mini-Hack Extension",
+  "version": "1.0",
   "description": "PokeRogue 100% Shiny & Egg Hacker (Developer Edition)",
   "permissions": [
     "activeTab"

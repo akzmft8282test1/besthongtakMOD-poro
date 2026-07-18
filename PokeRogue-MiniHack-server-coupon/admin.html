@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>PokeRogue Admin Control Panel</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #fff; padding: 40px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; max-width: 450px; margin-bottom: 20px; border: 1px solid #e0681a; }
+        input, select, button { width: 100%; box-sizing: border-box; padding: 10px; margin: 8px 0; border-radius: 4px; border: none; font-weight: bold; }
+        button { background: #e0681a; color: #000; cursor: pointer; }
+        .feature-block { display: flex; gap: 10px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h2>PokeRogue 프로젝트 쿠폰 제어 패널 👑</h2>
+    
+    <div id="login-section" class="card">
+        <h3>관리자 인증</h3>
+        <input type="password" id="admin-pass" placeholder="관리자 비밀번호">
+        <button onclick="login()">로그인</button>
+    </div>
+
+    <div id="control-section" class="card" style="display:none;">
+        <h3>쿠폰 커스텀 발급</h3>
+        
+        <label>원하는 쿠폰 코드 입력:</label>
+        <input type="text" id="custom-code" placeholder="예: NEW-START-2026">
+
+        <label>사용 가능 시간(분):</label>
+        <input type="number" id="duration" value="30" min="1">
+        
+        <label>허용할 기능 목록:</label>
+        <div class="feature-block"><input type="checkbox" value="shiny" class="feat" checked> 이로치 조작</div>
+        <div class="feature-block"><input type="checkbox" value="egg" class="feat" checked> 전설 알 후킹</div>
+        <div class="feature-block"><input type="checkbox" value="money" class="feat" checked> 무한 소지금</div>
+        <div class="feature-block"><input type="checkbox" value="starters" class="feat" checked> 스타터 및 알기술 해금</div>
+
+        <button onclick="createCustomCoupon()">쿠폰 등록하기</button>
+    </div>
+
+    <script>
+        const SERVER_URL = "https://besthongtak-control-server.onrender.com"; 
+        let adminToken = "";
+
+        async function login() {
+            const password = document.getElementById('admin-pass').value;
+            const res = await fetch(`${SERVER_URL}/api/admin/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await res.json();
+            if(data.success) {
+                adminToken = data.adminToken;
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('control-section').style.display = 'block';
+            } else { alert("비밀번호가 올바르지 않습니다."); }
+        }
+
+        async function createCustomCoupon() {
+            const customCode = document.getElementById('custom-code').value.trim();
+            const durationMinutes = parseInt(document.getElementById('duration').value);
+            const checkboxes = document.querySelectorAll('.feat:checked');
+            const allowedFeatures = Array.from(checkboxes).map(cb => cb.value);
+
+            if(!customCode) return alert("생성할 쿠폰 코드를 입력해주세요.");
+
+            const res = await fetch(`${SERVER_URL}/api/admin/generate-coupon`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': adminToken
+                },
+                body: JSON.stringify({ customCode, durationMinutes, allowedFeatures })
+            });
+            const data = await res.json();
+            if(data.success) {
+                alert(`🎉 [${data.coupon}] 쿠폰 코드가 서버에 정상 등록되었습니다.\n이 코드는 1회만 등록 사용 가능합니다.`);
+                document.getElementById('custom-code').value = "";
+            } else { alert(data.message); }
+        }
+    </script>
+</body>
+</html>
