@@ -50,141 +50,41 @@
             transition: transform 0.2s, border-color 0.2s;
         }
 
-        .card:hover {
-            border-color: var(--primary-color);
-        }
+        .card:hover { border-color: var(--primary-color); }
+        h3 { margin-top: 0; margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; color: #fff; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--muted-color); }
 
-        h3 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 18px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-            color: #fff;
-        }
+        .input-group { position: relative; margin-bottom: 18px; }
+        .time-group { display: flex; gap: 10px; margin-bottom: 18px; }
+        .time-box { flex: 1; position: relative; }
 
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--muted-color);
+        input[type="text"], input[type="number"], input[type="password"] { 
+            width: 100%; box-sizing: border-box; padding: 12px 14px; background: #0d1117; color: #fff;
+            border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; font-weight: 500;
+            outline: none; transition: border-color 0.2s, box-shadow 0.2s;
         }
+        input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15); }
 
-        .input-group {
-            position: relative;
-            margin-bottom: 18px;
-        }
+        .input-unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--muted-color); pointer-events: none; }
+        .btn-random { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: auto; padding: 6px 12px; font-size: 11px; background: #21262d; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; margin: 0; }
+        .btn-random:hover { background: #30363d; }
 
-        input[type="text"], 
-        input[type="number"], 
-        input[type="password"] { 
-            width: 100%; 
-            box-sizing: border-box; 
-            padding: 12px 14px; 
-            background: #0d1117;
-            color: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 8px; 
-            font-size: 14px;
-            font-weight: 500;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+        button { width: 100%; box-sizing: border-box; padding: 14px; margin-top: 10px; border-radius: 8px; border: none; font-size: 15px; font-weight: bold; background: var(--primary-color); color: #000; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+        button:hover { background: var(--primary-hover); }
+        button:active { transform: scale(0.98); }
 
-        input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15);
-        }
-
-        .btn-random {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: auto;
-            padding: 6px 12px;
-            font-size: 11px;
-            background: #21262d;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            border-radius: 6px;
-            margin: 0;
-        }
-
-        .btn-random:hover {
-            background: #30363d;
-        }
-
-        button { 
-            width: 100%; 
-            box-sizing: border-box; 
-            padding: 14px; 
-            margin-top: 10px;
-            border-radius: 8px; 
-            border: none; 
-            font-size: 15px;
-            font-weight: bold; 
-            background: var(--primary-color); 
-            color: #000; 
-            cursor: pointer; 
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        button:hover { 
-            background: var(--primary-hover); 
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .feature-container {
-            background: #0d1117;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 20px;
-        }
-
-        .feature-block { 
-            display: flex; 
-            align-items: center;
-            gap: 10px; 
-            padding: 8px 4px;
-            border-bottom: 1px solid #1f242c;
-        }
-
-        .feature-block:last-child {
-            border-bottom: none;
-        }
-
-        .feature-block input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary-color);
-            cursor: pointer;
-        }
-
-        .feature-block span {
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .feature-block .desc {
-            font-size: 11px;
-            color: var(--muted-color);
-            margin-left: auto;
-        }
+        .feature-container { background: #0d1117; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 20px; }
+        .feature-block { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid #1f242c; }
+        .feature-block:last-child { border-bottom: none; }
+        .feature-block input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary-color); cursor: pointer; }
+        .feature-block span { font-size: 14px; font-weight: 500; cursor: pointer; user-select: none; }
+        .feature-block .desc { font-size: 11px; color: var(--muted-color); margin-left: auto; }
     </style>
 </head>
 <body>
 
     <h2>PokeRogue Project Control Tower 👑</h2>
     
-    <!-- 1. 관리자 비밀번호 인증 카드 -->
     <div id="login-section" class="card">
         <h3>🔐 관리자 세션 인증</h3>
         <label for="admin-pass">Master Password</label>
@@ -192,7 +92,6 @@
         <button onclick="login()">Dashboard 진입</button>
     </div>
 
-    <!-- 2. 쿠폰 제어 및 커스텀 발급 카드 -->
     <div id="control-section" class="card" style="display:none;">
         <h3>🎫 일회성 보안 쿠폰 발행</h3>
         
@@ -202,10 +101,16 @@
             <button class="btn-random" onclick="generateRandomCode()">🎲 자동 생성</button>
         </div>
 
-        <label for="duration">유효 이용 한도 제한 (시간 단위 분할)</label>
-        <div class="input-group">
-            <input type="number" id="duration" value="60" min="1">
-            <span style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--muted-color);">분 동안 작동</span>
+        <label>유효 이용 한도 제한 (정밀 시간 설정)</label>
+        <div class="time-group">
+            <div class="time-box">
+                <input type="number" id="duration-min" value="30" min="0" placeholder="0">
+                <span class="input-unit">분</span>
+            </div>
+            <div class="time-box">
+                <input type="number" id="duration-sec" value="0" min="0" max="59" placeholder="0">
+                <span class="input-unit">초</span>
+            </div>
         </div>
         
         <label>허용 권한 및 인젝션 모듈 선택</label>
@@ -239,20 +144,16 @@
         const SERVER_URL = "https://besthongtak-control-server.onrender.com"; 
         let adminToken = "";
 
-        // 편리성을 위한 무작위 쿠폰 생성기 기능 추가
         function generateRandomCode() {
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             let result = "ROGE-";
-            for (let i = 0; i < 8; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            for (let i = 0; i < 8; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
             document.getElementById('custom-code').value = result;
         }
 
         async function login() {
             const password = document.getElementById('admin-pass').value;
             if(!password) return alert("비밀번호를 입력해주세요.");
-            
             try {
                 const res = await fetch(`${SERVER_URL}/api/admin/login`, {
                     method: 'POST',
@@ -264,23 +165,24 @@
                     adminToken = data.adminToken;
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('control-section').style.display = 'block';
-                    generateRandomCode(); // 로그인 성공 시 기본 코드 1개 자동 추천
-                } else { 
-                    alert("⚠️ 비밀번호가 올바르지 않습니다."); 
-                }
-            } catch (e) {
-                alert("네트워크 통신 중 에러가 발생했습니다.");
-            }
+                    generateRandomCode();
+                } else { alert("⚠️ 비밀번호가 올바르지 않습니다."); }
+            } catch (e) { alert("네트워크 통신 중 에러가 발생했습니다."); }
         }
 
         async function createCustomCoupon() {
             const customCode = document.getElementById('custom-code').value.trim();
-            const durationMinutes = parseInt(document.getElementById('duration').value);
+            const min = parseInt(document.getElementById('duration-min').value) || 0;
+            const sec = parseInt(document.getElementById('duration-sec').value) || 0;
+            
+            // 총 시간을 초 단위로 합산 환산
+            const totalSeconds = (min * 60) + sec;
+
             const checkboxes = document.querySelectorAll('.feat:checked');
             const allowedFeatures = Array.from(checkboxes).map(cb => cb.value);
 
             if(!customCode) return alert("생성할 쿠폰 코드를 명시하거나 자동 생성 버튼을 누르세요.");
-            if(isNaN(durationMinutes) || durationMinutes < 1) return alert("유효 시간은 최소 1분 이상이어야 합니다.");
+            if(totalSeconds < 1) return alert("유효 시간은 최소 1초 이상이어야 합니다.");
             if(allowedFeatures.length === 0) return alert("최소 한 개 이상의 모듈 권한을 승인해야 합니다.");
 
             try {
@@ -290,18 +192,14 @@
                         'Content-Type': 'application/json',
                         'Authorization': adminToken
                     },
-                    body: JSON.stringify({ customCode, durationMinutes, allowedFeatures })
+                    body: JSON.stringify({ customCode, durationSeconds: totalSeconds, allowedFeatures })
                 });
                 const data = await res.json();
                 if(data.success) {
-                    alert(`🎉 [${data.coupon}] 등록 완벽 성공!\n클라이언트 제어 코드가 백엔드 세션에 기록되었습니다.`);
-                    generateRandomCode(); // 다음 발급을 위해 난수 미리 롤링
-                } else { 
-                    alert(data.message); 
-                }
-            } catch (e) {
-                alert("쿠폰 발급 원격 요청 처리 중 통신 에러가 빌생했습니다.");
-            }
+                    alert(`🎉 [${data.coupon}] 등록 완벽 성공!\n설정 시간: ${min}분 ${sec}초 (${totalSeconds}초)`);
+                    generateRandomCode();
+                } else { alert(data.message); }
+            } catch (e) { alert("쿠폰 발급 요청 중 에러가 발생했습니다."); }
         }
     </script>
 </body>

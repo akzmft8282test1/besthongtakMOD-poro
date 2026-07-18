@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
 
-// 로컬 환경 변수(.env 파일) 로드용
 require('dotenv').config();
 
 const app = express();
@@ -12,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // ==========================================
-// [엄격한 검증] .env에 필수 값이 없으면 즉시 에러 발생 및 종료
+// [엄격한 검증] .env 환경 변수 확인
 // ==========================================
 const PORT = process.env.PORT;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -21,25 +20,15 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 if (!PORT || !ADMIN_PASSWORD || !JWT_SECRET || !SUPABASE_URL || !SUPABASE_KEY) {
-    console.error("❌ 서버 시작 실패: .env 파일에 누락된 설정 값이 존재합니다.");
-    console.error(`- PORT: ${PORT ? 'OK' : 'MISSING'}`);
-    console.error(`- ADMIN_PASSWORD: ${ADMIN_PASSWORD ? 'OK' : 'MISSING'}`);
-    console.error(`- JWT_SECRET: ${JWT_SECRET ? 'OK' : 'MISSING'}`);
-    console.error(`- SUPABASE_URL: ${SUPABASE_URL ? 'OK' : 'MISSING'}`);
-    console.error(`- SUPABASE_KEY: ${SUPABASE_KEY ? 'OK' : 'MISSING'}`);
+    console.error("❌ 서버 시작 실패: .env 설정 설정 값이 누락되었습니다.");
     process.exit(1);
 }
 
-// Supabase 클라이언트 초기화
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==========================================
-// [루트 경로] 대시보드 파일 매핑
-// ==========================================
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
-
 
 /**
  * 1. 관리자 로그인
@@ -54,7 +43,7 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 /**
- * 2. 관리자 쿠폰 생성 (Supabase DB 저장)
+ * 2. 관리자 쿠폰 생성 (초 단위 반영)
  */
 app.post('/api/admin/generate-coupon', async (req, res) => {
     const authHeader = req.headers.authorization;
@@ -64,16 +53,15 @@ app.post('/api/admin/generate-coupon', async (req, res) => {
         const decoded = jwt.verify(authHeader, JWT_SECRET);
         if (decoded.role !== 'admin') return res.status(403).json({ message: "권한이 없습니다." });
 
-        const { customCode, durationMinutes, allowedFeatures } = req.body;
+        const { customCode, durationSeconds, allowedFeatures } = req.body;
 
-        if (!customCode || durationMinutes === undefined || !allowedFeatures || !Array.isArray(allowedFeatures)) {
-            return res.status(400).json({ message: "필수 입력 값이 누락되었거나 형식이 올바르지 않습니다." });
+        if (!customCode || durationSeconds === undefined || !allowedFeatures || !Array.isArray(allowedFeatures)) {
+            return res.status(400).json({ message: "필수 데이터 누락 또는 포맷 에러" });
         }
 
-        // 대소문자 오차 방지를 위한 변환 규칙 강화
         const upperCode = customCode.trim().toUpperCase();
 
-        // [DB 연동] 중복 쿠폰 체크
+        // 중복 체크
         const { data: existingCoupon } = await supabase
             .from('coupons')
             .select('coupon_code')
@@ -84,12 +72,12 @@ app.post('/api/admin/generate-coupon', async (req, res) => {
             return res.status(400).json({ message: "이미 존재하는 쿠폰 코드입니다." });
         }
 
-        // [DB 연동] 영구 저장소 레코드 삽입
+        // DB 컬럼 매핑: duration_seconds 변경 적용
         const { error: insertError } = await supabase
             .from('coupons')
             .insert([{
                 coupon_code: upperCode,
-                duration_minutes: parseInt(durationMinutes, 10),
+                duration_seconds: parseInt(durationSeconds, 10),
                 allowed_features: allowedFeatures,
                 is_used: false
             }]);
@@ -99,22 +87,20 @@ app.post('/api/admin/generate-coupon', async (req, res) => {
         res.json({ success: true, coupon: upperCode });
     } catch (err) {
         console.error(err);
-        res.status(401).json({ message: "인증 토큰이 유효하지 않거나 데이터베이스 트랜잭션 처리 오류입니다." });
+        res.status(401).json({ message: "인증 토큰 오류 또는 데이터베이스 처리 실패" });
     }
 });
 
 /**
- * 3. 클라이언트 라이선스 인증 및 1회성 검증 (Supabase 동기화)
+ * 3. 클라이언트 라이선스 인증 및 발급 (정밀 초 단위 만료 적용)
  */
 app.post('/api/license/redeem', async (req, res) => {
     const { couponCode } = req.body;
     if (!couponCode) return res.status(400).json({ valid: false, message: "코드를 입력해주세요." });
 
-    // 사용자가 입력한 문자열 오차 교정
     const upperCode = couponCode.trim().toUpperCase();
 
     try {
-        // [DB 연동] 쿠폰 레코드 조회
         const { data: coupon, error } = await supabase
             .from('coupons')
             .select('*')
@@ -129,33 +115,32 @@ app.post('/api/license/redeem', async (req, res) => {
             return res.status(400).json({ valid: false, message: "이미 사용된 쿠폰 코드입니다." });
         }
 
-        // [DB 연동 핵심] 동시성 충돌 및 중복 사용 차단을 위한 즉각적인 단방향 상태 잠금
+        // 사용 완료 락킹
         const { error: updateError } = await supabase
             .from('coupons')
-            .update({ 
-                is_used: true, 
-                used_at: new Date().toISOString() 
-            })
+            .update({ is_used: true, used_at: new Date().toISOString() })
             .eq('id', coupon.id);
 
         if (updateError) throw updateError;
 
-        // 지정된 사용 한도 유효기간을 반영한 서명 발급
+        // jwt.sign의 expiresIn에 단독 숫자(정수) 입력 시 '초(seconds)' 단위로 연산 처리됨
         const clientToken = jwt.sign(
             { features: coupon.allowed_features },
             JWT_SECRET,
-            { expiresIn: `${coupon.duration_minutes}m` }
+            { expiresIn: parseInt(coupon.duration_seconds, 10) }
         );
 
+        // 클라이언트가 연산하기 편하도록 분 단위 소수점 데이터도 같이 리턴
         res.json({
             valid: true,
             token: clientToken,
             features: coupon.allowed_features,
-            durationMinutes: coupon.duration_minutes
+            durationMinutes: parseFloat((coupon.duration_seconds / 60).toFixed(2)),
+            durationSeconds: coupon.duration_seconds
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ valid: false, message: "서버 혹은 데이터베이스 내부 처리 중 오류가 발생했습니다." });
+        res.status(500).json({ valid: false, message: "서버 내부 처리 중 오류가 발생했습니다." });
     }
 });
 
