@@ -137,7 +137,8 @@ app.post("/api/license/exchange-uid", async (req, res) => {
     for (let i = 0; i < 6; i++) {
       randStr += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    const userUid = `ROGUE-UID[${randStr}]`.substring(0, 15); // 정확히 15글자 제한 절삭
+    // 요청하신 포맷: ROGUE-UID + 6자리 랜덤 문자 = 총 15자리
+    const userUid = `ROGUE-UID${randStr}`.substring(0, 15); // 정확히 15글자 제한 절삭
 
     const expiresAt = new Date(
       Date.now() + coupon.duration_seconds * 1000,

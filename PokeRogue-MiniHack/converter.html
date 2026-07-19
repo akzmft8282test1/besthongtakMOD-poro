@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SVG/PNG 변환 도구</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        background: #0c0f12;
+        color: #fff;
+      }
+      textarea {
+        width: 100%;
+        height: 200px;
+        background: #161b22;
+        color: #fff;
+        border: 1px solid #ff7a00;
+      }
+      button {
+        padding: 10px 20px;
+        background: #ff7a00;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .box {
+        margin-bottom: 30px;
+        border: 1px solid #30363d;
+        padding: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h3>1. SVG → PNG (512x512)</h3>
+      <textarea id="svgInput" placeholder="SVG 코드를 입력하세요..."></textarea
+      ><br /><br />
+      <button onclick="svgToPng()">PNG로 다운로드</button>
+    </div>
+
+    <div class="box">
+      <h3>2. PNG → SVG (Base64 데이터 변환)</h3>
+      <input type="file" id="pngInput" accept="image/png" /><br /><br />
+      <button onclick="pngToSvg()">SVG 코드로 변환</button>
+      <textarea
+        id="svgOutput"
+        placeholder="변환된 결과가 여기에 표시됩니다..."></textarea>
+    </div>
+
+    <script>
+      // SVG -> PNG 변환 (512x512)
+      function svgToPng() {
+        const svg = document.getElementById("svgInput").value;
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, 512, 512);
+          const link = document.createElement("a");
+          link.download = "converted.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        };
+        img.src =
+          "data:image/svg+xml;base64," +
+          btoa(unescape(encodeURIComponent(svg)));
+      }
+
+      // PNG -> SVG (Base64 Data URL 변환)
+      function pngToSvg() {
+        const file = document.getElementById("pngInput").files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById("svgOutput").value =
+            `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><image href="${e.target.result}"/></svg>`;
+        };
+        reader.readAsDataURL(file);
+      }
+    </script>
+  </body>
+</html>
