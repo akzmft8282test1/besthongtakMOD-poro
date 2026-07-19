@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- 포켓볼 상단/심볼 네온 오렌지 그라디언트 -->
+    <linearGradient id="neonOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffb800" />
+      <stop offset="50%" stop-color="#ff7a00" />
+      <stop offset="100%" stop-color="#e0681a" />
+    </linearGradient>
+    <!-- 네온 발광 글로우 효과 (투명 배경에서 더 돋보이도록 조정) -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComponentTransfer in="blur" result="glowAlpha">
+        <feFuncA type="linear" slope="0.6"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="glowAlpha" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 기존 <rect> 배경 태그 제거 완료 (투명 상태) -->
+
+  <!-- 사이버네틱 서킷 백그라운드 라인 (투명 배경에 맞춰 가독성 보정) -->
+  <path d="M 15,35 L 35,35 L 48,48 M 113,93 L 93,93 L 80,80" stroke="#ff7a00" stroke-width="2" stroke-opacity="0.4" stroke-dasharray="4,4" fill="none" />
+
+  <!-- 로고 메인 심볼 (중앙 정렬 보정 및 크기 최적화) -->
+  <g transform="translate(0, 2)">
+    <!-- 포켓볼 상단 쉘 (핵 하이라이트 + 네온 글로우) -->
+    <path d="M 24,62 A 40,40 0 0,1 104,62 Z" fill="url(#neonOrange)" filter="url(#glow)" />
+    
+    <!-- 포켓볼 하단 쉘 (반투명 사이버 흑철색 디자인) -->
+    <path d="M 24,66 A 40,40 0 0,0 104,66 Z" fill="#161b22" stroke="#30363d" stroke-width="2" fill-opacity="0.9" />
+    
+    <!-- 중앙 수평 절연 스플리터 라인 -->
+    <rect x="20" y="61" width="88" height="6" fill="#0c0f12" rx="3" />
+    
+    <!-- 코어 제어 장치 외곽 서클 -->
+    <circle cx="64" cy="64" r="16" fill="#0c0f12" stroke="#ff7a00" stroke-width="3" filter="url(#glow)" />
+    
+    <!-- 코어 내부 액티베이션 서클 -->
+    <circle cx="64" cy="64" r="8" fill="#fff" />
+    
+    <!-- 상단 대시보드 톱니바퀴형 크라운 엣지 데코레이션 -->
+    <path d="M 56,12 L 72,12 L 68,20 L 60,20 Z" fill="#ff7a00" filter="url(#glow)" />
+  </g>
+</svg>

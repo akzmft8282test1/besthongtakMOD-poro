@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- 배경 부드러운 다크 그라디언트 -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#161b22" />
+      <stop offset="100%" stop-color="#0c0f12" />
+    </linearGradient>
+    <!-- 포켓볼 상단/심볼 네온 오렌지 그라디언트 -->
+    <linearGradient id="neonOrange" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff9e46" />
+      <stop offset="100%" stop-color="#ff6a00" />
+    </linearGradient>
+    <!-- 네온 발광 글로우 효과 -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- 테두리가 둥근 베이스 배경 -->
+  <rect width="128" height="128" rx="28" fill="url(#bgGrad)" stroke="#30363d" stroke-width="3" />
+
+  <!-- 사이버네틱 서킷 백그라운드 라인 -->
+  <path d="M 20,40 L 40,40 L 50,50 M 108,88 L 88,88 L 78,78" stroke="#ff6a00" stroke-width="1.5" stroke-opacity="0.15" stroke-dasharray="4,4" fill="none" />
+
+  <!-- 로고 메인 심볼 (사이버 포켓볼 + 렌치/툴 하이브리드) -->
+  <g transform="translate(0, 2)">
+    <!-- 포켓볼 상단 쉘 (핵 하이라이트) -->
+    <path d="M 34,62 A 30,30 0 0,1 94,62 Z" fill="url(#neonOrange)" filter="url(#glow)" />
+    
+    <!-- 포켓볼 하단 쉘 (미래지향적 메탈릭 그레이) -->
+    <path d="M 34,66 A 30,30 0 0,0 94,66 Z" fill="#21262d" stroke="#30363d" stroke-width="1" />
+    
+    <!-- 중앙 수평 절연 스플리터 라인 -->
+    <rect x="30" y="61" width="68" height="4" fill="#0d1117" rx="2" />
+    
+    <!-- 코어 제어 장치 외곽 서클 -->
+    <circle cx="64" cy="63" r="12" fill="#0d1117" stroke="#ff6a00" stroke-width="2.5" filter="url(#glow)" />
+    
+    <!-- 코어 내부 액티베이션 서클 -->
+    <circle cx="64" cy="63" r="6" fill="#fff" />
+    
+    <!-- 상단 대시보드 톱니바퀴형 크라운 엣지 데코레이션 -->
+    <path d="M 58,26 L 70,26 L 67,32 L 61,32 Z" fill="#ff6a00" opacity="0.8" />
+  </g>
+</svg>
