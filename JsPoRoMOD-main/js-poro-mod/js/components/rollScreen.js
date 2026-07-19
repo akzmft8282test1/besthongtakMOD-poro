@@ -81,7 +81,7 @@ export function loadRollScreen() {
         "Money",
         "money-input",
         minBigInt,
-        10000,
+        1000000,
         maxBigInt,
         (value) => {
             hackInstance.setMoney(value);
@@ -93,7 +93,7 @@ export function loadRollScreen() {
         "Count",
         "rollCount-input",
         minInt,
-        10,
+        0,
         maxInt,
         (value) => {
             hackInstance.setRollCount(value);

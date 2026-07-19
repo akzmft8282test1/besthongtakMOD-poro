@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeRogue Admin Control Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #0c0f12;
+            --card-bg: #161b22;
+            --primary-color: #ff7a00;
+            --primary-hover: #e0681a;
+            --text-color: #f0f3f6;
+            --muted-color: #8b949e;
+            --border-color: #30363d;
+            --success-color: #2ea44f;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-color); 
+            padding: 40px 20px; 
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #ff7a00, #ffb800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 12px rgba(255, 122, 0, 0.1);
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 16px; 
+            width: 100%;
+            max-width: 480px; 
+            box-sizing: border-box;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color); 
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover { border-color: var(--primary-color); }
+        h3 { margin-top: 0; margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; color: #fff; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--muted-color); }
+
+        .input-group { position: relative; margin-bottom: 18px; }
+        .time-group { display: flex; gap: 10px; margin-bottom: 18px; }
+        .time-box { flex: 1; position: relative; }
+
+        input[type="text"], input[type="number"], input[type="password"] { 
+            width: 100%; box-sizing: border-box; padding: 12px 14px; background: #0d1117; color: #fff;
+            border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; font-weight: 500;
+            outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15); }
+
+        .input-unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--muted-color); pointer-events: none; }
+        .btn-random { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: auto; padding: 6px 12px; font-size: 11px; background: #21262d; border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; margin: 0; }
+        .btn-random:hover { background: #30363d; }
+
+        button { width: 100%; box-sizing: border-box; padding: 14px; margin-top: 10px; border-radius: 8px; border: none; font-size: 15px; font-weight: bold; background: var(--primary-color); color: #000; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+        button:hover { background: var(--primary-hover); }
+        button:active { transform: scale(0.98); }
+
+        .feature-container { background: #0d1117; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 20px; }
+        .feature-block { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid #1f242c; }
+        .feature-block:last-child { border-bottom: none; }
+        .feature-block input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary-color); cursor: pointer; }
+        .feature-block span { font-size: 14px; font-weight: 500; cursor: pointer; user-select: none; }
+        .feature-block .desc { font-size: 11px; color: var(--muted-color); margin-left: auto; }
+    </style>
+</head>
+<body>
+
+    <h2>PokeRogue Project Control Tower 👑</h2>
+    
+    <div id="login-section" class="card">
+        <h3>🔐 관리자 세션 인증</h3>
+        <label for="admin-pass">Master Password</label>
+        <input type="password" id="admin-pass" placeholder="보안 통신용 관리자 비밀번호 입력">
+        <button onclick="login()">Dashboard 진입</button>
+    </div>
+
+    <div id="control-section" class="card" style="display:none;">
+        <h3>🎫 일회성 보안 쿠폰 발행</h3>
+        
+        <label>쿠폰 코드 구성</label>
+        <div class="input-group">
+            <input type="text" id="custom-code" placeholder="예: SHINY-LUCK-2026">
+            <button class="btn-random" onclick="generateRandomCode()">🎲 자동 생성</button>
+        </div>
+
+        <label>유효 이용 한도 제한 (정밀 시간 설정)</label>
+        <div class="time-group">
+            <div class="time-box">
+                <input type="number" id="duration-min" value="30" min="0" placeholder="0">
+                <span class="input-unit">분</span>
+            </div>
+            <div class="time-box">
+                <input type="number" id="duration-sec" value="0" min="0" max="59" placeholder="0">
+                <span class="input-unit">초</span>
+            </div>
+        </div>
+        
+        <label>허용 권한 및 인젝션 모듈 선택</label>
+        <div class="feature-container">
+            <div class="feature-block">
+                <input type="checkbox" id="f-shiny" value="shiny" class="feat" checked>
+                <span onclick="document.getElementById('f-shiny').click()">🌟 행운 및 이로치 종합 조작</span>
+                <div class="desc">[이로치/연타/사탕/아이템 스택]</div>
+            </div>
+            <div class="feature-block">
+                <input type="checkbox" id="f-egg" value="egg" class="feat" checked>
+                <span onclick="document.getElementById('f-egg').click()">🥚 전설 알 가로채기 후킹</span>
+                <div class="desc">[부화 웨이브 단축 포함]</div>
+            </div>
+            <div class="feature-block">
+                <input type="checkbox" id="f-money" value="money" class="feat" checked>
+                <span onclick="document.getElementById('f-money').click()">💰 무한 골드 및 상점 리롤</span>
+                <div class="desc">[소지금 고정 및 리롤 지정]</div>
+            </div>
+            <div class="feature-block">
+                <input type="checkbox" id="f-starters" value="starters" class="feat" checked>
+                <span onclick="document.getElementById('f-starters').click()">🧬 올 스타터 및 알기술 해금</span>
+                <div class="desc">[도감 강제 완벽 주입]</div>
+            </div>
+        </div>
+
+        <button onclick="createCustomCoupon()" style="background: var(--success-color); color: #fff;">보안 라이선스 쿠폰 등록</button>
+    </div>
+
+    <script>
+        const SERVER_URL = "https://besthongtak-control-server.onrender.com"; 
+        let adminToken = "";
+
+        function generateRandomCode() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let result = "ROGE-";
+            for (let i = 0; i < 8; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
+            document.getElementById('custom-code').value = result;
+        }
+
+        async function login() {
+            const password = document.getElementById('admin-pass').value;
+            if(!password) return alert("비밀번호를 입력해주세요.");
+            try {
+                const res = await fetch(`${SERVER_URL}/api/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    adminToken = data.adminToken;
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('control-section').style.display = 'block';
+                    generateRandomCode();
+                } else { alert("⚠️ 비밀번호가 올바르지 않습니다."); }
+            } catch (e) { alert("네트워크 통신 중 에러가 발생했습니다."); }
+        }
+
+        async function createCustomCoupon() {
+            const customCode = document.getElementById('custom-code').value.trim();
+            const min = parseInt(document.getElementById('duration-min').value) || 0;
+            const sec = parseInt(document.getElementById('duration-sec').value) || 0;
+            
+            // 총 시간을 초 단위로 합산 환산
+            const totalSeconds = (min * 60) + sec;
+
+            const checkboxes = document.querySelectorAll('.feat:checked');
+            const allowedFeatures = Array.from(checkboxes).map(cb => cb.value);
+
+            if(!customCode) return alert("생성할 쿠폰 코드를 명시하거나 자동 생성 버튼을 누르세요.");
+            if(totalSeconds < 1) return alert("유효 시간은 최소 1초 이상이어야 합니다.");
+            if(allowedFeatures.length === 0) return alert("최소 한 개 이상의 모듈 권한을 승인해야 합니다.");
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/admin/generate-coupon`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': adminToken
+                    },
+                    body: JSON.stringify({ customCode, durationSeconds: totalSeconds, allowedFeatures })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    alert(`🎉 [${data.coupon}] 등록 완벽 성공!\n설정 시간: ${min}분 ${sec}초 (${totalSeconds}초)`);
+                    generateRandomCode();
+                } else { alert(data.message); }
+            } catch (e) { alert("쿠폰 발급 요청 중 에러가 발생했습니다."); }
+        }
+    </script>
+</body>
+</html>

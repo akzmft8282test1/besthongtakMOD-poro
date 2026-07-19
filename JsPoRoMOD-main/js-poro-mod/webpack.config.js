@@ -1,64 +1,36 @@
 const path = require("path");
-const TerserPlugin = require("terser-webpack-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 module.exports = {
-    mode: "production",
-    entry: {
-        main: "./js/main.js",
+  // production 모드로 빌드하여 공백 제거 및 자동 압축(Minify)을 진행합니다.
+  mode: "production",
+
+  // 메인 진입점 파일 지정
+  entry: "./decompiled_code/deobfuscated.js",
+
+  output: {
+    // 요청하신 파일명으로 빌드 결과물 지정
+    filename: "mod.min.js",
+    path: path.resolve(__dirname, "dist"),
+    clean: true, // 빌드 시 dist 폴더 내 이전 파일 정리
+
+    library: {
+      name: "PokeRogueMOD",
+      type: "umd",
+      export: "default",
     },
-    output: {
-        filename: "mod.min.js",
-        path: path.resolve(__dirname),
-        library: "PokeRogueMOD",
-        libraryTarget: "umd",
-        globalObject: "this",
+    globalObject: "this",
+  },
+
+  // 웹팩이 모듈을 해석할 때 확장자가 없어도 자동으로 .js를 찾도록 설정합니다.
+  resolve: {
+    extensions: [".js", ".json"],
+    alias: {
+      // 혹시 모를 상대 경로 탐색 오류 방지
+      "@": path.resolve(__dirname, "decompiled_code"),
     },
-    module: {
-        rules: [
-            {
-                test: /\.css$/i,
-                use: ["style-loader", "css-loader"],
-            },
-            {
-                test: /\.html$/i,
-                use: "raw-loader",
-            },
-            {
-                test: /\.(png|jpg|gif|svg)$/i,
-                use: [
-                    {
-                        loader: "url-loader",
-                        options: {
-                            limit: 8192, // Limit in bytes. Files smaller than this will be converted to Data URI.
-                            fallback: "file-loader",
-                            name: "[name].[hash].[ext]",
-                            esModule: false, // Disable ES modules for compatibility
-                        },
-                    },
-                ],
-            },
-        ],
-    },
-    optimization: {
-        minimize: true,
-        minimizer: [
-            new TerserPlugin({
-                terserOptions: {
-                    compress: {
-                        drop_console: false,
-                        passes: 3,
-                    },
-                    format: {
-                        comments: false,
-                    },
-                    mangle: {
-                        safari10: true,
-                    },
-                },
-                extractComments: false,
-            }),
-            new CssMinimizerPlugin(),
-        ],
-    },
+  },
+
+  performance: {
+    hints: false,
+  },
 };

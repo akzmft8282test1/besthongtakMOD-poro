@@ -4,7 +4,8 @@
   "description": "This project is a lightweight web mod with a modern Material Design UI. It includes screens for rolling features, managing account data, and importing/exporting data.",
   "main": "webpack.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
   "keywords": [],
   "author": "",

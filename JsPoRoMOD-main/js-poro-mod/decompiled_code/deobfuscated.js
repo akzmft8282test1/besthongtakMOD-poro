@@ -4599,19 +4599,19 @@
           .getElementById("videoButton")
           .addEventListener("click", function () {
             this.blur();
-            window.open("*", "_blank");
+            window.open("https://youtu.be/L_c9TXFbDIM", "_blank");
           });
         document
           .getElementById("codeButton")
           .addEventListener("click", function () {
             this.blur();
-            window.open("https://github.com/akzmft8282test1", "_blank");
+            window.open("https://github.com/PokeRogueMOD/JsPoRoMOD", "_blank");
           });
         document
           .getElementById("twitchButton")
           .addEventListener("click", function () {
             this.blur();
-            window.open("https://www.twitch.tv/", "_blank");
+            window.open("https://www.twitch.tv/mpb_rip", "_blank");
           });
         Ac("rollButton");
         console.log("Popup initialized");

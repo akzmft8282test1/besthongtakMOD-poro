@@ -77,6 +77,7 @@ export const Achievements = {
     DAILY_VICTORY: 74,
     LIMITED_CATCH: 75,
     LIMITED_SUPPORT: 76,
-    HARDCORE: 76,
+    HARDCORE: 77,
     NUZLOCKE: 78,
+    PASSIVES_CHALLENGE: 79,
 };

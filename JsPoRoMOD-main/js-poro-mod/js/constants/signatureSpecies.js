@@ -156,4 +156,5 @@ export const SignatureSpecies = {
 
     KUKUI: 150,
     MUSTARD: 151,
+    BEDE_ELITE: 152
 };
