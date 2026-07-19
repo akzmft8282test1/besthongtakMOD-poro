@@ -10,6 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// [추가] 정적 파일 서빙을 위한 public 폴더 설정
+app.use(express.static(path.join(__dirname, "public")));
+
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -23,9 +26,19 @@ if (!PORT || !ADMIN_PASSWORD || !JWT_SECRET || !SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "admin.html"));
-});
+// [변경] 각 경로별 HTML 파일 서빙
+app.get("/", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "about.html")),
+);
+app.get("/admin", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "admin.html")),
+);
+app.get("/download", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "download.html")),
+);
+app.get("/dev", (req, res) =>
+  res.sendFile(path.join(__dirname, "public", "code-rogic.html")),
+);
 
 // 1. 관리자 세션 대시보드 로그인
 app.post("/api/admin/login", (req, res) => {
