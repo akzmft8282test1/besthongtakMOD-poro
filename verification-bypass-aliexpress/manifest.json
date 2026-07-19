@@ -1,0 +1,41 @@
+{
+    "manifest_version": 3,
+    "name": "ali verification bypass",
+    "version": "1.0",
+    "description": "*********",
+    "author": "akzmft8282",
+    "developer": {
+        "name": "akzmft8282",
+        "url": "*"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+          "id": "helloyanis@ageverif-bypass",
+            "data_collection_permissions": {
+                "required": ["none"]
+            }
+        }
+    },
+    "permissions": [
+        "webRequest",
+        "webRequestBlocking",
+        "webRequestFilterResponse",
+        "scripting"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "background": {
+        "scripts": [
+            "websites/agechecker.net.js",
+            "websites/ageverif.com.js",
+            "websites/aliexpress.com.js",
+            "websites/bsky.app.js",
+            "websites/reddit.com.js",
+            "websites/veriff.me.js"
+        ]
+    },
+    "action": {
+        "default_icon": "icon.svg"
+    }
+}

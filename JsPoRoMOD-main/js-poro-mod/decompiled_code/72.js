@@ -24,7 +24,7 @@ function c(e, c) {
       media: l[2],
       sourceMap: l[3],
       supports: l[4],
-      layer: l[5]
+      layer: l[5],
     };
     if (r !== -1) {
       n[r].references++;
@@ -35,7 +35,7 @@ function c(e, c) {
       n.splice(h, 0, {
         identifier: a,
         updater: L,
-        references: 1
+        references: 1,
       });
     }
     C.push(a);
@@ -47,17 +47,23 @@ function o(e, n) {
   t.update(e);
   return function (n) {
     if (n) {
-      if (n.css === e.css && n.media === e.media && n.sourceMap === e.sourceMap && n.supports === e.supports && n.layer === e.layer) {
+      if (
+        n.css === e.css &&
+        n.media === e.media &&
+        n.sourceMap === e.sourceMap &&
+        n.supports === e.supports &&
+        n.layer === e.layer
+      ) {
         return;
       }
-      t.update(e = n);
+      t.update((e = n));
     } else {
       t.remove();
     }
   };
 }
 module.exports = function (e, o) {
-  var O = c(e = e || [], o = o || {});
+  var O = c((e = e || []), (o = o || {}));
   return function (e) {
     e = e || [];
     for (var C = 0; C < O.length; C++) {

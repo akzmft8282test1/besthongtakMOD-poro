@@ -10,6 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ==========================================
+// [엄격한 검증] .env 환경 변수 확인
+// ==========================================
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -17,7 +20,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 if (!PORT || !ADMIN_PASSWORD || !JWT_SECRET || !SUPABASE_URL || !SUPABASE_KEY) {
-  console.error("❌ 서버 시작 실패: .env 설정 값이 누락되었습니다.");
+  console.error("❌ 서버 시작 실패: .env 설정 설정 값이 누락되었습니다.");
   process.exit(1);
 }
 
@@ -27,7 +30,9 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
-// 1. 관리자 세션 대시보드 로그인
+/**
+ * 1. 관리자 세션 대시보드 로그인
+ */
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body;
   if (password === ADMIN_PASSWORD) {
@@ -41,39 +46,59 @@ app.post("/api/admin/login", (req, res) => {
     .json({ success: false, message: "비밀번호가 틀렸습니다." });
 });
 
-// 1-2. 모든 쿠폰 데이터 목록 실시간 조회
+/**
+ * [신규 추가] 1-2. 모든 쿠폰 데이터 목록 실시간 조회 (최신순 정렬)
+ */
 app.get("/api/admin/coupons", async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(403).json({ message: "권한이 없습니다." });
+
   try {
     const decoded = jwt.verify(authHeader, JWT_SECRET);
     if (decoded.role !== "admin")
       return res.status(403).json({ message: "권한이 없습니다." });
 
+    // Supabase에서 최신 등록된 순서대로 정렬하여 쿼리
     const { data: coupons, error } = await supabase
       .from("coupons")
       .select("*")
-      .order("id", { ascending: false });
+      .order("id", { ascending: false }); // id 혹은 created_at 기준 내림차순 정렬
 
     if (error) throw error;
+
     return res.json({ success: true, coupons });
   } catch (err) {
+    console.error(err);
     return res
       .status(401)
-      .json({ message: "인증 실패 또는 데이터베이스 에러" });
+      .json({ message: "인증 실패 또는 데이터베이스 통신 에러" });
   }
 });
 
-// 2. 일회성 보안 허용 라이선스 쿠폰 생성 발급
+/**
+ * 2. 일회성 보안 허용 라이선스 쿠폰 생성 발급
+ */
 app.post("/api/admin/generate-coupon", async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(403).json({ message: "권한이 없습니다." });
+
   try {
     const decoded = jwt.verify(authHeader, JWT_SECRET);
     if (decoded.role !== "admin")
       return res.status(403).json({ message: "권한이 없습니다." });
 
     const { customCode, durationSeconds, allowedFeatures } = req.body;
+    if (
+      !customCode ||
+      durationSeconds === undefined ||
+      !allowedFeatures ||
+      !Array.isArray(allowedFeatures)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "필수 데이터 누락 또는 포맷 에러" });
+    }
+
     const upperCode = customCode.trim().toUpperCase();
 
     const { data: existingCoupon } = await supabase
@@ -82,10 +107,11 @@ app.post("/api/admin/generate-coupon", async (req, res) => {
       .eq("coupon_code", upperCode)
       .maybeSingle();
 
-    if (existingCoupon)
+    if (existingCoupon) {
       return res
         .status(400)
         .json({ message: "이미 존재하는 쿠폰 코드입니다." });
+    }
 
     const { error: insertError } = await supabase.from("coupons").insert([
       {
@@ -97,21 +123,24 @@ app.post("/api/admin/generate-coupon", async (req, res) => {
     ]);
 
     if (insertError) throw insertError;
+
     res.json({ success: true, coupon: upperCode });
   } catch (err) {
-    res.status(500).json({ message: "데이터베이스 처리 실패" });
+    res
+      .status(401)
+      .json({ message: "인증 토큰 오류 또는 데이터베이스 처리 실패" });
   }
 });
 
 /**
- * 3. [변경됨] 쿠폰 코드를 입력하여 15자리의 랜덤 유저 UID 발급 받기
+ * 3. 확장 스크립트 라이선스 검증 동기화 엔드포인트
  */
-app.post("/api/license/exchange-uid", async (req, res) => {
+app.post("/api/license/redeem", async (req, res) => {
   const { couponCode } = req.body;
   if (!couponCode)
     return res
       .status(400)
-      .json({ valid: false, message: "쿠폰 코드를 입력하세요." });
+      .json({ valid: false, message: "코드를 입력해주세요." });
 
   const upperCode = couponCode.trim().toUpperCase();
 
@@ -122,101 +151,49 @@ app.post("/api/license/exchange-uid", async (req, res) => {
       .eq("coupon_code", upperCode)
       .maybeSingle();
 
-    if (error || !coupon)
+    if (error || !coupon) {
       return res
         .status(404)
         .json({ valid: false, message: "존재하지 않는 쿠폰입니다." });
-    if (coupon.is_used)
+    }
+
+    if (coupon.is_used) {
       return res
         .status(400)
-        .json({ valid: false, message: "이미 사용된 쿠폰입니다." });
-
-    // 6자리 랜덤 대문자/숫자 조합 생성하여 총 15자리 UID 포맷 확정 (ROGUE-UID[XXXXXX])
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let randStr = "";
-    for (let i = 0; i < 6; i++) {
-      randStr += chars.charAt(Math.floor(Math.random() * chars.length));
+        .json({ valid: false, message: "이미 사용된 쿠폰 코드입니다." });
     }
-    const userUid = `ROGUE-UID[${randStr}]`.substring(0, 15); // 정확히 15글자 제한 절삭
 
-    const expiresAt = new Date(
-      Date.now() + coupon.duration_seconds * 1000,
-    ).toISOString();
-
-    // 트랜잭션 성격의 동시 처리: 쿠폰 사용 표시 및 UID 라이선스 등록
-    await supabase
+    const { error: updateError } = await supabase
       .from("coupons")
       .update({ is_used: true, used_at: new Date().toISOString() })
       .eq("id", coupon.id);
-    await supabase.from("user_licenses").insert([
-      {
-        user_uid: userUid,
-        associated_coupon: upperCode,
-        features: coupon.allowed_features,
-        expires_at: expiresAt,
-      },
-    ]);
 
-    res.json({
-      valid: true,
-      userUid: userUid,
-      message: "유저 UID 발급 성공",
-    });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ valid: false, message: "서버 처리 오류가 발생했습니다." });
-  }
-});
+    if (updateError) throw updateError;
 
-/**
- * 4. [변경됨] 발급된 UID를 통해 인게임 오버레이 대시보드 검증 및 런타임 진입
- */
-app.post("/api/license/verify-uid", async (req, res) => {
-  const { userUid } = req.body;
-  if (!userUid)
-    return res
-      .status(400)
-      .json({ valid: false, message: "UID를 입력해주세요." });
-
-  try {
-    const { data: license, error } = await supabase
-      .from("user_licenses")
-      .select("*")
-      .eq("user_uid", userUid.trim())
-      .maybeSingle();
-
-    if (error || !license)
-      return res
-        .status(404)
-        .json({ valid: false, message: "등록되지 않은 안전 인증 UID입니다." });
-
-    const isExpired = new Date(license.expires_at).getTime() < Date.now();
-    if (isExpired)
-      return res
-        .status(400)
-        .json({ valid: false, message: "이용 시간이 만료된 세션 UID입니다." });
-
-    const remainSec = Math.floor(
-      (new Date(license.expires_at).getTime() - Date.now()) / 1000,
-    );
     const clientToken = jwt.sign(
-      { features: license.features, uid: license.user_uid },
+      { features: coupon.allowed_features },
       JWT_SECRET,
-      { expiresIn: remainSec },
+      { expiresIn: parseInt(coupon.duration_seconds, 10) },
     );
 
     res.json({
       valid: true,
       token: clientToken,
-      features: license.features,
-      durationMinutes: parseFloat((remainSec / 60).toFixed(2)),
+      features: coupon.allowed_features,
+      durationMinutes: parseFloat((coupon.duration_seconds / 60).toFixed(2)),
+      durationSeconds: coupon.duration_seconds,
     });
   } catch (err) {
-    res.status(500).json({ valid: false, message: "인증 처리 오류" });
+    res
+      .status(500)
+      .json({
+        valid: false,
+        message: "서버 내부 처리 중 오류가 발생했습니다.",
+      });
   }
 });
 
 app.listen(PORT, () =>
   console.log(`🚀 Server strictly running on port ${PORT}`),
 );
+                                                                                                                   

@@ -2,5 +2,9 @@ var c = require("./601.js");
 var o = c;
 var O = require("./314.js");
 var C = O(o);
-C.push([module.id, "/* social.css */\n.social-toggle {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    cursor: pointer;\n    background: transparent;\n    border: none;\n    outline: none;\n    width: 100%;\n    color: #e0681a;\n    padding: 4px;\n}\n\n/* Prevent background color change on click */\n.social-toggle:active {\n    background: transparent; /* Ensure background remains transparent */\n}\n\n/* If you want to prevent focus outline on click */\n.social-toggle:focus {\n    outline: none; /* Prevents focus outline */\n}\n\n/* Ensure hover state also remains transparent */\n.social-toggle:hover {\n    background: transparent;\n}\n\n.social-links {\n    display: none;\n    flex-direction: column;\n    gap: 6px;\n    align-items: center;\n    width: 100%;\n}\n\n.social-links.active {\n    display: flex;\n}\n\n.social-button img {\n    max-width: 20px;\n    max-height: 20px;\n}\n", ""]);
+C.push([
+  module.id,
+  "/* social.css */\n.social-toggle {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    cursor: pointer;\n    background: transparent;\n    border: none;\n    outline: none;\n    width: 100%;\n    color: #e0681a;\n    padding: 4px;\n}\n\n/* Prevent background color change on click */\n.social-toggle:active {\n    background: transparent; /* Ensure background remains transparent */\n}\n\n/* If you want to prevent focus outline on click */\n.social-toggle:focus {\n    outline: none; /* Prevents focus outline */\n}\n\n/* Ensure hover state also remains transparent */\n.social-toggle:hover {\n    background: transparent;\n}\n\n.social-links {\n    display: none;\n    flex-direction: column;\n    gap: 6px;\n    align-items: center;\n    width: 100%;\n}\n\n.social-links.active {\n    display: flex;\n}\n\n.social-button img {\n    max-width: 20px;\n    max-height: 20px;\n}\n",
+  "",
+]);
 export const A = C;

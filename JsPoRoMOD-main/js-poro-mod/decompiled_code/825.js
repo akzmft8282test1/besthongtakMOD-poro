@@ -2,7 +2,7 @@ module.exports = function (e) {
   if (typeof document == "undefined") {
     return {
       update: function () {},
-      remove: function () {}
+      remove: function () {},
     };
   }
   var n = e.insertStyleElement(e);
@@ -45,6 +45,6 @@ module.exports = function (e) {
         }
         e.parentNode.removeChild(e);
       })(n);
-    }
+    },
   };
 };
